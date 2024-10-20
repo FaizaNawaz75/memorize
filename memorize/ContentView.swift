@@ -7,13 +7,13 @@ import SwiftUI
 
 struct ContentView: View {
     var body: some View {
-        VStack {
-            HStack {
-                CardView()
-                CardView(isFaceUp: true)
-                CardView()
-            }.padding(5)
-        }
+        let cardIcons = ["👽", "👻", "🦊", "🦁", "🦁"]
+
+        HStack {
+            ForEach(cardIcons.indices, id: \.self) { index in
+                CardView(cardIcon: cardIcons[index])
+            }
+        }.padding()
     }
 }
 
@@ -22,23 +22,25 @@ struct ContentView: View {
 }
 
 struct CardView: View {
-    var isFaceUp: Bool = false
+    let cardIcon: String
+    @State var isFaceUp: Bool = true
     
     var body: some View {
         ZStack {
+            let baseCard = RoundedRectangle(cornerRadius: 10)
+            
             if isFaceUp {
-                RoundedRectangle(cornerRadius: 10)
-                    .foregroundStyle(.white)
-                
-                RoundedRectangle(cornerRadius: 10)
-                    .strokeBorder(style: .init(lineWidth: 2))
-                
-                Text("👻")
-                    .font(.largeTitle)
+                baseCard.fill(.white)
+                baseCard.strokeBorder(style: .init(lineWidth: 2))
+                Text(cardIcon).font(.largeTitle)
             } else {
-                RoundedRectangle(cornerRadius: 10)
+                baseCard
             }
         }
         .foregroundStyle(.orange)
+        .onTapGesture {
+            //            isFaceUp = !isFaceUp
+            isFaceUp.toggle()
+        }
     }
 }
