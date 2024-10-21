@@ -5,19 +5,30 @@
 
 import SwiftUI
 
+enum Theme {
+    case Halloween
+    case Animals
+    case Weather
+}
+
 struct ContentView: View {
-    let cardIcons = ["👽", "👻", "🦊", "🦁",
-                     "🐮", "🐸", "🐙", "🐥"]
+    @State var cardIcons = [""]
     
-    @State var cardCount = 4
+    let animalTheme = ["🐅", "🦓", "🦧", "🐎", "🐈","🐄", "🐅", "🦓", "🦧",
+                       "🐎", "🐈", "🐄"]
+    
+    let weatherTheme = ["☁️", "☀️", "🌤️", "🌥️", "🌨️", "🌈", "☁️", "☀️", "🌤️",
+                        "🌥️", "🌨️", "🌈"]
+    
+    let halloweenTheme = ["👻", "🎃", "💀", "👽"]
     
     var body: some View {
         VStack {
+            Text ("Memorize!").font(.largeTitle)
             ScrollView {
                 cards
             }
-            Spacer()
-            cardCountAdjusters
+            themeButtons
         }
     }
     
@@ -25,45 +36,52 @@ struct ContentView: View {
     var cards: some View {
         
         //LazyVGrid uses as less space as it can where as HStack uses as much space as it can. It's the way they are defined...
-        LazyVGrid(columns: [GridItem(.adaptive(minimum: 120))]) {
-            ForEach(0..<cardCount, id: \.self) { index in
+        LazyVGrid(columns: [GridItem(.adaptive(minimum: 100))]) {
+            ForEach(0..<cardIcons.count, id: \.self) { index in
                 CardView(cardIcon: cardIcons[index])
                     .aspectRatio(2/3, contentMode: .fit)
             }
         }.padding()
     }
     
-    var cardCountAdjusters: some View {
+    var themeButtons: some View {
         HStack {
-            cardRemover
-            cardAdder
+            themeButton(title: "Halloween", theme: .Halloween)
+            themeButton(title: "Animals", theme: .Animals)
+            themeButton(title: "Weather", theme: .Weather)
+        }.padding()
+    }
+    
+    fileprivate func themeButton(title: String, theme: Theme) -> some View {
+        Button {
+            updateTheme(selectedTheme: theme)
+        } label: {
+            themeButtonTitle(title: title)
         }
-        .padding()
     }
     
-    var cardRemover: some View {
-        cardCountAdjuster(by: -1, title: "Remove Card")
-    }
-    
-    var cardAdder: some View {
-        cardCountAdjuster(by: 1, title: "Add Card")
-    }
-    
-    fileprivate func cardCountAdjuster(by offset: Int, title: String) -> some View {
+    fileprivate func themeButtonTitle(title: String) -> some View {
         
-        Button(action: {
-            cardCount += offset
-        }) {
-            Text(title)
-                .padding()
-                .frame(maxWidth: .infinity)
-                .background(Color.orange)
-                .foregroundColor(.white)
-                .cornerRadius(10)
-        }
-        .disabled(cardCount + offset < 1 ||  cardCount + offset > cardIcons.count)
+        return Text(title)
+            .padding()
+            .frame(maxWidth: .infinity)
+            .background(Color.orange)
+            .foregroundColor(.white)
+            .cornerRadius(10)
     }
     
+    fileprivate func updateTheme(selectedTheme: Theme) {
+        
+        cardIcons.removeAll()
+        switch selectedTheme {
+        case .Halloween:
+            cardIcons.append(contentsOf: halloweenTheme)
+        case .Animals:
+            cardIcons.append(contentsOf: animalTheme)
+        case .Weather:
+            cardIcons.append(contentsOf: weatherTheme)
+        }
+    }
 }
 
 struct CardView: View {
