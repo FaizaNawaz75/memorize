@@ -12,7 +12,7 @@ enum Theme {
 }
 
 struct ContentView: View {
-    @State var cardIcons = [""]
+    @State var cardIcons: [String] = []
     
     let animalTheme = ["🐅", "🦓", "🦧", "🐎", "🐈","🐄", "🐅", "🦓", "🦧",
                        "🐎", "🐈", "🐄"]
@@ -20,7 +20,8 @@ struct ContentView: View {
     let weatherTheme = ["☁️", "☀️", "🌤️", "🌥️", "🌨️", "🌈", "☁️", "☀️", "🌤️",
                         "🌥️", "🌨️", "🌈"]
     
-    let halloweenTheme = ["👻", "🎃", "💀", "👽"]
+    let halloweenTheme = ["👻", "🎃", "💀", "👽", "👻", "🎃", "💀", "👽", "🎁",
+                          "🎁", "😱", "😱"]
     
     var body: some View {
         VStack {
@@ -46,28 +47,44 @@ struct ContentView: View {
     
     var themeButtons: some View {
         HStack {
-            themeButton(title: "Halloween", theme: .Halloween)
-            themeButton(title: "Animals", theme: .Animals)
-            themeButton(title: "Weather", theme: .Weather)
-        }.padding()
-    }
-    
-    fileprivate func themeButton(title: String, theme: Theme) -> some View {
-        Button {
-            updateTheme(selectedTheme: theme)
-        } label: {
-            themeButtonTitle(title: title)
+            themeButton(theme: .Halloween)
+            themeButton(theme: .Animals)
+            themeButton(theme: .Weather)
         }
     }
     
-    fileprivate func themeButtonTitle(title: String) -> some View {
+    fileprivate func themeButton(theme: Theme) -> some View {
+        Button {
+            updateTheme(selectedTheme: theme)
+        } label: {
+            let themeInfo = themeInfo(theme: theme)
+            themeButtonTitle(title: themeInfo.title, imageName: themeInfo.image)
+        }
+    }
+    
+    fileprivate func themeInfo(theme: Theme) -> (title: String, image: String) {
         
-        return Text(title)
-            .padding()
-            .frame(maxWidth: .infinity)
-            .background(Color.orange)
-            .foregroundColor(.white)
-            .cornerRadius(10)
+        switch theme {
+        case .Halloween:
+            return ("Halloween", "leaf.fill")
+        case .Animals:
+            return ("Animals", "tortoise")
+        case .Weather:
+            return ("Weather", "sun.max.fill")
+        }
+    }
+    
+    fileprivate func themeButtonTitle(title: String, imageName: String) -> some View {
+        
+        VStack {
+            Image(systemName: imageName).padding(.bottom, 2)
+            Text(title)
+        }.padding()
+            .foregroundStyle(.orange)
+            .background(
+                RoundedRectangle(cornerRadius: 10)
+                    .stroke(.orange, lineWidth: 1)
+            )
     }
     
     fileprivate func updateTheme(selectedTheme: Theme) {
@@ -75,18 +92,18 @@ struct ContentView: View {
         cardIcons.removeAll()
         switch selectedTheme {
         case .Halloween:
-            cardIcons.append(contentsOf: halloweenTheme)
+            cardIcons.append(contentsOf: halloweenTheme.shuffled())
         case .Animals:
-            cardIcons.append(contentsOf: animalTheme)
+            cardIcons.append(contentsOf: animalTheme.shuffled())
         case .Weather:
-            cardIcons.append(contentsOf: weatherTheme)
+            cardIcons.append(contentsOf: weatherTheme.shuffled())
         }
     }
 }
 
 struct CardView: View {
     let cardIcon: String
-    @State var isFaceUp: Bool = true
+    @State var isFaceUp: Bool = false
     
     var body: some View {
         ZStack {
