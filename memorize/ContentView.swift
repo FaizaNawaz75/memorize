@@ -1,6 +1,6 @@
 //
 //  ContentView.swift
-//  memorize
+//  memorizee
 //
 
 import SwiftUI
